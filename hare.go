@@ -11,6 +11,10 @@ const (
 )
 
 // Listener tools for socket listening
+// 包装net.Listener
+// HasNewMessages 是否有新消息
+// GetMessage 获取消息
+// Stop 中断连接
 type Listener struct {
 	SocketListener net.Listener
 	HasNewMessages func() bool
@@ -24,9 +28,11 @@ type MessageManager struct {
 	Message        string
 }
 
+// 启动监听  用running控制停止
 func listening(listener Listener, messageManager *MessageManager, running *bool) error {
 	for *running {
 		c, _ := listener.SocketListener.Accept()
+		// \n分隔消息
 		message, _ := bufio.NewReader(c).ReadString('\n')
 		messageManager.Message = message
 		messageManager.HasNewMessages = true
@@ -79,3 +85,5 @@ func Send(port, message string) error {
 	conn.Write([]byte(message))
 	return nil
 }
+
+// 总体代码比较简单
